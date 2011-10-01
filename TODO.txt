@@ -1,7 +1,7 @@
 Stories to do:
- - Download of the first file on the site homepage without unzipping
- - Unzipping on the fly during the download
+ X Unzipping on the fly during the download
+ - Discover the link to zip file on details page
+ - Figure out the Showname, season and episode number from an .AVI filename
  - Download the first result of a specified showname
  - Download the first result when user specifies showname, season and episode
- - Figure out the Showname, season and episode number from an .AVI filename
 

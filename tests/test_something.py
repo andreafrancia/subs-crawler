@@ -1,9 +1,6 @@
-from nose.tools import assert_equals
 from urllib import urlopen
 import shutil
-import unittest
 from contextlib import closing
-import hashlib
 import zipfile
 from StringIO import StringIO
 import filecmp
