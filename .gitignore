@@ -1,2 +1,2 @@
 env/
-test_extract_download_link.pyc test_something.pyc
+*.pyc
