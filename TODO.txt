@@ -4,3 +4,4 @@ Stories to do:
  - Download the first result of a specified showname
  - Download the first result when user specifies showname, season and episode
  - Figure out the Showname, season and episode number from an .AVI filename
+
