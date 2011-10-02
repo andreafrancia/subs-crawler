@@ -1,5 +1,6 @@
 def load(path):
-    contents = file('test_data/' + path).read()
+    contents = file(resolve(path)).read()
     return contents
-def path(path):
+
+def resolve(path):
     return 'test_data/' + path
