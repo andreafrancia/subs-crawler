@@ -1,17 +1,18 @@
-from nose.tools import assert_equals
-import unittest
 from mockito import mock, when, verify, mock as stub, verifyNoMoreInteractions
 from .. import pages
-from crawler import GetSubs
+from crawler import GetSubs, search_url_for
 
-search_url='/search'
 
 def test_whole_interaction():
     http = stub()
     destination = mock()
-    when(http).get(search_url     ).thenReturn(pages.search_result_list('/details-page'))
-    when(http).get('/details_page').thenReturn(pages.details_page('/link-to-zip-file'))
-    when(http).get('/zip-file').thenReturn(
+    
+    search_url = search_url_for('Family Guy', '10', '1')
+    details_url = '/en/ppodnapisi/podnapis/details'
+
+    when(http).get(search_url ).thenReturn(pages.search_result_list(details_url))
+    when(http).get(details_url).thenReturn(pages.details_page('/zip-file-url'))
+    when(http).get('/zip-file-url').thenReturn(
             pages.a_zip_containing('subtitles.srt', 'contents of .srt file'))
 
     getsubs = GetSubs(http, destination)
@@ -21,5 +22,4 @@ def test_whole_interaction():
             named='subtitles.srt', 
             contents='contents of .srt file')
     verifyNoMoreInteractions(destination)
-
 

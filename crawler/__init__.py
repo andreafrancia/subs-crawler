@@ -1,6 +1,3 @@
-from urllib import urlopen
-import shutil
-from contextlib import closing
 import zipfile
 from StringIO import StringIO
 
@@ -10,8 +7,14 @@ class GetSubs:
         self.http = http
 
     def run(self, showname, season, episode):
-        zip_file_contents=self.http.get('/zip-file')
 
+        results_page = self.http.get(search_url_for(showname, season, episode))
+        link_to_details_page = pick_first_details_link(results_page)
+         
+        details_page = self.http.get(link_to_details_page)
+        link_to_zip_file = extract_zip_link(details_page)
+
+        zip_file_contents=self.http.get(link_to_zip_file)
         subtitles_file=extract_first_zipped_file(zip_file_contents)
 
         self.destination.place_file(named='subtitles.srt',
@@ -33,10 +36,40 @@ class HtmlPage:
         return self.dom.xpath(expr)
 
 def extract_zip_link(page_contents):
+    return get_first_xpath(page_contents, '//a[h1/text()="Download"]/@href')
+
+def get_first_xpath(page_contents, expr):
     page=HtmlPage(page_contents)
-    return page.xpath('//a[h1/text()="Download"]/@href')[0]
+    results = page.xpath(expr)
+
+    try:
+        return results[0]
+    except IndexError:
+        raise RuntimeError(page_contents)
 
 def pick_first_details_link(page_contents):
-    page=HtmlPage(page_contents)
-    return page.xpath("//a[starts-with(@href,'/en/ppodnapisi/podnapis')]/@href")[0]
+    return get_first_xpath(page_contents, 
+                           "//a[starts-with(@href,'/en/ppodnapisi/podnapis')]/@href")
+
+from urllib import quote_plus
+def search_url_for(showname, season, episode):
+    return ("http://www.sub-titles.net/"
+            "en/ppodnapisi/search?"
+            "tbsl=3&"
+            "asdp=1&"
+            "sK=%(showname)s&" # showname
+            "sM=0&"
+            "sJ=9&" # language
+            'sO=desc&'
+            'sS=time&'
+            "submit=Search&"
+            "sAKA=1&"
+            'sTS=%(season)s&'
+            'sTE=%(episode)s&'
+            "sY=&"
+            "sR=&" # Release
+            "sT=1"
+        % {'showname':quote_plus(showname),
+           'season':season,
+           'episode': episode})
 
