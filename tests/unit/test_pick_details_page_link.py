@@ -1,7 +1,5 @@
 from nose.tools import assert_equals
-
-def test_something():
-    assert_equals(1,1)
+from crawler import pick_first_details_link
 
 def test_howto_pick_link_of_details_page():
     page="""
@@ -14,7 +12,8 @@ def test_howto_pick_link_of_details_page():
     assert_equals('/en/ppodnapisi/podnapis/details', 
                   pick_first_details_link(page))
 
-def pick_first_details_link(page):
-    expression="//x:a[starts-with(@href,'/en/ppodnapisi/podnapis')]"
-    pass
+def test_integration_howto_pick_link_of_details_page():
+    page=file('test_data/home-page.html').read()
 
+    assert_equals('/en/ppodnapisi/podnapis/i/1316202/psych-2006-podnapisi',
+                  pick_first_details_link(page))

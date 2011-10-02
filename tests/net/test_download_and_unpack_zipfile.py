@@ -1,4 +1,5 @@
 from crawler import download_and_unpack_subtitles_file
+import test_data
 
 def test_howto_download_and_unpack_a_subttiles_files():
     ensure_empty_dir('sandbox')
@@ -8,7 +9,7 @@ def test_howto_download_and_unpack_a_subttiles_files():
 
     download_and_unpack_subtitles_file(url, dest_name)
    
-    assert_file_equals('sandbox/output.srt', 'test-data/expected.srt')
+    assert_file_equals('sandbox/output.srt', test_data.path('expected.srt'))
 
 def ensure_empty_dir(path):
     import os

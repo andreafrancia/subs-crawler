@@ -1,8 +1,9 @@
 from nose.tools import assert_equals
 from crawler import extract_zip_link
+import test_data
 
 def test_should_extract_the_zip_link():
-    page=file('test-data/drive-2011-subtitrari.html').read()
+    page=test_data.load('drive-2011-subtitrari.html')
     assert_equals('/en/ppodnapisi/download/i/1315272/k/'
                   '92ed8a52c45ac0eb804a1e56954aaac178e660fd', 
                   extract_zip_link(page))
