@@ -32,4 +32,4 @@ def test_search_url():
                   'sY=&'
                   'sR=&'
                   'sT=1', search_url_for('Family Guy', 'SS', 'EE'))
-    pass
+
