@@ -6,7 +6,16 @@ class GetSubs:
         self.destination = destination
         self.http = http
 
-    def run(self, showname, season, episode):
+    def run(self, *args):
+        if len(args)==3:
+            showname=args[0]
+            season=args[1]
+            episode=args[2]
+            subs_filename='subtitles.srt'
+        else:
+            filename=args[0]
+            showname, season, episode = parse(filename)
+            subs_filename=filename.replace('.avi', '.srt') # TODO: not robust
 
         results_page = self.http.get(search_url_for(showname, season, episode))
         link_to_details_page = pick_first_details_link(results_page)
@@ -17,8 +26,18 @@ class GetSubs:
         zip_file_contents=self.http.get(link_to_zip_file)
         subtitles_file=extract_first_zipped_file(zip_file_contents)
 
-        self.destination.place_file(named='subtitles.srt',
+        self.destination.place_file(named=subs_filename,
                                     contents=subtitles_file)
+def parse(filename):
+    import re
+
+    match=re.finditer("(.*)S(..)E(..)", filename).next()
+
+    showname = match.group(1).replace('.',' ').strip()
+    season   = match.group(2).lstrip('0')
+    episode  = match.group(3).lstrip('0')
+
+    return (showname, season, episode)
 
 def extract_first_zipped_file(zip_file_contents):
     zip_file = zipfile.ZipFile(StringIO(zip_file_contents), 'r')
