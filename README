@@ -1,0 +1,9 @@
+# How to set up the development environment
+
+    virtualenv env --no-site-packages
+    source env/bin/activate
+    pip install -r deps.txt
+
+# How to run all the tests
+
+    nosetests
