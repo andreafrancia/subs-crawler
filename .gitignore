@@ -3,3 +3,6 @@ env/
 .coverage
 cover/
 *.srt
+*.egg-info/
+build/
+dist/

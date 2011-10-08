@@ -1,14 +1,7 @@
-# How to set up the development environment
+# Install with
 
-    virtualenv env --no-site-packages
-    source env/bin/activate
-    pip install -r deps.txt
+    python setup.py install 
 
-# How to run all the tests
+# Run with
 
-    nosetests
-
-# Try it
-
-    python crawler.py The.Big.Bang.Theory.S01E01.avi
-
+    crawls-subs Showname.S02E03.avi

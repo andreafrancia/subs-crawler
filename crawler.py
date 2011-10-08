@@ -4,7 +4,8 @@ from StringIO import StringIO
 from urllib2 import urlopen, URLError
 from urlparse import urljoin
 
-def main(args):
+def main():
+    import sys
     class http:
         def get(self, url):
             print url
@@ -16,7 +17,7 @@ def main(args):
         def place_file(self, named, contents):
             place_file(named, contents)
     getsubs = GetSubs(http(), destination())
-    getsubs.run(*args[1:])
+    getsubs.run(*sys.argv[1:])
 
 def place_file(filename, contents):
     with file(filename, 'wb') as f:
@@ -170,6 +171,5 @@ def search_url_for(showname, season, episode):
            'episode': episode})
 
 if __name__ == '__main__':
-    import sys
-    main(sys.argv)
+    main()
 
