@@ -13,10 +13,8 @@ def main():
                 return urlopen(url).read()
             except URLError, e:
                 raise IOError('URL: %s, %s' % (url, repr(e)))
-    class destination:
-        def place_file(self, named, contents):
-            place_file(named, contents)
-    getsubs = GetSubs(http(), destination())
+    getsubs = GetSubs(http(), 
+                      place_file)
     getsubs.run(*sys.argv[1:])
 
 def place_file(filename, contents):
@@ -24,9 +22,9 @@ def place_file(filename, contents):
         f.write(contents)
 
 class GetSubs:
-    def __init__(self, http, destination):
-        self.destination = destination
+    def __init__(self, http, place_file):
         self.http = http
+        self.place_file = place_file
 
     def run(self, *args):
         filename=args[0]
@@ -37,8 +35,8 @@ class GetSubs:
          FindLinkToDetailsPage(self.http,
             LocateUrlOfZipFile(self.http,
            DownloadZipContents(self.http, 
-                 WriteSubsFile(self.destination, 
-                               subs_filename(filename))
+                 WriteSubsFile(subs_filename(filename),
+                               self.place_file)
                                )))))
         )(filename)
 
@@ -55,12 +53,12 @@ class FigureOutEpisodeCoords:
         self.output(showname, season, episode)
         
 class WriteSubsFile:
-    def __init__(self, destination, filename):
-        self.destination = destination
+    def __init__(self, filename, output):
         self.filename = filename
+        self.output = output
     def __call__(self, file_contents):
-        self.destination.place_file(named=self.filename,
-                                    contents=file_contents)
+        self.output(self.filename, file_contents)
+
 class FigureOutSearchUrl:
     def __init__(self, output):
         self.output = output

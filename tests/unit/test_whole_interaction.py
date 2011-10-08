@@ -1,11 +1,12 @@
-from mockito import mock, when, verify, mock as stub, verifyNoMoreInteractions
+from mockito import when, mock as stub
 from .. import pages
 from crawler import GetSubs, search_url_for
+from mock import Mock
 
 def test_whole_interaction():
 
     http = stub()
-    destination = mock()
+    place_file  = Mock()
     
     search_url   = search_url_for('Family Guy', '10', '1')
     details_url  = '/en/ppodnapisi/podnapis/details'
@@ -16,10 +17,9 @@ def test_whole_interaction():
     when(http).get('http://zip-file-url').thenReturn(
             pages.a_zip_containing('subtitles.srt', 'contents of .srt file'))
 
-    getsubs = GetSubs(http, destination)
+    getsubs = GetSubs(http, place_file)
     getsubs.run('Family.GuyS10E01.rest.avi')
 
-    verify(destination).place_file(named='Family.GuyS10E01.rest.srt', 
-                                   contents='contents of .srt file')
-    verifyNoMoreInteractions(destination)
+    place_file.assert_called_with('Family.GuyS10E01.rest.srt', 
+                                  'contents of .srt file')
 
