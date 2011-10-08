@@ -3,6 +3,7 @@ from .. import pages
 from crawler import GetSubs, search_url_for
 
 def test_whole_interaction():
+
     http = stub()
     destination = mock()
     

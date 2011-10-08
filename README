@@ -7,3 +7,8 @@
 # How to run all the tests
 
     nosetests
+
+# Try it
+
+    python crawler.py The.Big.Bang.Theory.S01E01.avi
+

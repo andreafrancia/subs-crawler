@@ -7,14 +7,20 @@ from urlparse import urljoin
 def main(args):
     class http:
         def get(self, url):
+            print url
             try:
                 return urlopen(url).read()
             except URLError, e:
                 raise IOError('URL: %s, %s' % (url, repr(e)))
     class destination:
-        pass
+        def place_file(self, named, contents):
+            place_file(named, contents)
     getsubs = GetSubs(http(), destination())
     getsubs.run(*args[1:])
+
+def place_file(filename, contents):
+    with file(filename, 'wb') as f:
+        f.write(contents)
 
 class GetSubs:
     def __init__(self, http, destination):
