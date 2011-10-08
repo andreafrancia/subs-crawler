@@ -1,6 +1,15 @@
 from nose.tools import assert_equals
 from .. import pages
 
+from crawler import subs_filename
+class Test_subs_filename:
+    def test_should_be_the_filename_with_extension_changed(self):
+        assert_equals('foo.srt', subs_filename('foo.avi'))
+    def test_should_not_be_confused(self):
+        assert_equals('i.miei.avi.srt', subs_filename('i.miei.avi.avi'))
+    def test_should_work_with_uppercase_extensions(self):
+        assert_equals('foo.srt', subs_filename('foo.AVI'))
+
 from crawler import pick_first_details_link
 def test_howto_pick_link_of_details_page():
     page=pages.search_result_list('/en/ppodnapisi/podnapis/details')
@@ -32,4 +41,6 @@ def test_search_url():
                   'sY=&'
                   'sR=&'
                   'sT=1', search_url_for('Family Guy', 'SS', 'EE'))
+
+
 

@@ -1,33 +1,104 @@
 import zipfile
 from StringIO import StringIO
 
+from urllib2 import urlopen, URLError
+from urlparse import urljoin
+
+def main(args):
+    class http:
+        def get(self, url):
+            try:
+                return urlopen(url).read()
+            except URLError, e:
+                raise IOError('URL: %s, %s' % (url, repr(e)))
+    class destination:
+        pass
+    getsubs = GetSubs(http(), destination())
+    getsubs.run(*args[1:])
+
 class GetSubs:
     def __init__(self, http, destination):
         self.destination = destination
         self.http = http
 
     def run(self, *args):
-        if len(args)==3:
-            showname=args[0]
-            season=args[1]
-            episode=args[2]
-            subs_filename='subtitles.srt'
-        else:
-            filename=args[0]
-            showname, season, episode = parse(filename)
-            subs_filename=filename.replace('.avi', '.srt') # TODO: not robust
+        filename=args[0]
 
-        results_page = self.http.get(search_url_for(showname, season, episode))
-        link_to_details_page = pick_first_details_link(results_page)
-         
-        details_page = self.http.get(link_to_details_page)
-        link_to_zip_file = extract_zip_link(details_page)
+        (  
+        FigureOutEpisodeCoords(
+            FigureOutSearchUrl(
+         FindLinkToDetailsPage(self.http,
+            LocateUrlOfZipFile(self.http,
+           DownloadZipContents(self.http, 
+                 WriteSubsFile(self.destination, 
+                               subs_filename(filename))
+                               )))))
+        )(filename)
 
-        zip_file_contents=self.http.get(link_to_zip_file)
-        subtitles_file=extract_first_zipped_file(zip_file_contents)
+def subs_filename(filename):
+    import os
+    root, _ = os.path.splitext(filename)
+    return root + '.srt'
 
-        self.destination.place_file(named=subs_filename,
-                                    contents=subtitles_file)
+class FigureOutEpisodeCoords:
+    def __init__(self, output):
+        self.output = output
+    def __call__(self, filename):
+        showname, season, episode = parse(filename)
+        self.output(showname, season, episode)
+        
+class WriteSubsFile:
+    def __init__(self, destination, filename):
+        self.destination = destination
+        self.filename = filename
+    def __call__(self, file_contents):
+        self.destination.place_file(named=self.filename,
+                                    contents=file_contents)
+class FigureOutSearchUrl:
+    def __init__(self, output):
+        self.output = output
+    def __call__(self, showname, season, episode):
+        search_results_url = search_url_for(showname, season, episode)
+        self.output(search_results_url)
+
+class FindLinkToDetailsPage:
+    def __init__(self, http, output):
+        self.http = http
+        self.output = output
+    def __call__(self, search_results_url):
+        search_results_page = self.http.get(search_results_url)
+        link_to_details_page = pick_first_details_link(search_results_page)
+        subsfile_details_url = urljoin(search_results_url, link_to_details_page)
+        self.output(subsfile_details_url)
+
+class LocateUrlOfZipFile:
+    def __init__(self, http, output):
+        self.http = http
+        self.output = output 
+
+    def __call__(self, subsfile_details_url):
+        subsfile_details_page = self.http.get(subsfile_details_url)
+        link_to_zipfile = extract_zip_link(subsfile_details_page)
+        url_to_zipfile = urljoin(subsfile_details_url, link_to_zipfile)
+        self.output(url_to_zipfile)
+                 
+class DownloadZipContents:
+    def __init__(self, http, output):
+        self.http = http
+        self.output = output
+    def __call__(self, url_to_zipfile):
+        zip_file_contents=self.http.get(url_to_zipfile)
+        zipped_file_contents=extract_first_zipped_file(zip_file_contents)
+        self.output(zipped_file_contents)
+
+class Parser:
+    def __init__(self, outbox):
+        self.outbox = outbox
+    def parse(self,filename):
+        result = parse(filename)
+        self.outbox(result)
+
+
 def parse(filename):
     import re
 
@@ -91,4 +162,8 @@ def search_url_for(showname, season, episode):
         % {'showname':quote_plus(showname),
            'season':season,
            'episode': episode})
+
+if __name__ == '__main__':
+    import sys
+    main(sys.argv)
 
