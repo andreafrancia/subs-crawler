@@ -11,4 +11,5 @@
 # Try it
 
     python crawler.py The.Big.Bang.Theory.S01E01.avi
+    test -f The.Big.Bang.Theory.S01E01.srt
 
