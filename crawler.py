@@ -6,16 +6,19 @@ from urlparse import urljoin
 
 def main():
     import sys
-    class http:
-        def get(self, url):
-            print url
-            try:
-                return urlopen(url).read()
-            except URLError, e:
-                raise IOError('URL: %s, %s' % (url, repr(e)))
-    getsubs = GetSubs(http(), 
+    getsubs = GetSubs(RealHttp(), 
                       place_file)
     getsubs.run(*sys.argv[1:])
+
+
+class RealHttp:
+    def get(self, url):
+        print url
+        try:
+            return urlopen(url).read()
+        except URLError, e:
+            raise IOError('URL: %s, %s' % (url, repr(e)))
+
 
 def place_file(filename, contents):
     with file(filename, 'wb') as f:
